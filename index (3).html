@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+           
+        }
+        .cold {
+            background-image: url('cold_image.jpg');
+        } 
+        .hot {
+            background-image: url('hot_image.jpg');
+        }
+        #currentTemp, #maxTemp, #minTemp {
+            margin-top: 20px;
+        }
+        #TEMP {
+            color: red;
+            font-weight: bold;
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="currentTemp"></h1>
+    <p id="TEMP"></p>
+    <h1 id="maxTemp"></h1>
+    <h1 id="minTemp"></h1>
+
+    <script>
+        const fetchData = async () => {
+            const url = 'https://open-weather13.p.rapidapi.com/city/toronto/EN';
+            const options = {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': '38f81efd77msha264ee340682c9ep15fc36jsnaf7ec703eb0f',
+                    'X-RapidAPI-Host': 'open-weather13.p.rapidapi.com'
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                // Extract temperature data from the API response
+                const currentTempFahrenheit = data.main.temp;
+                const maxTempFahrenheit = data.main.temp_max;
+                const minTempFahrenheit = data.main.temp_min;
+
+                // Convert temperatures from Fahrenheit to Celsius
+                const currentTempCelsius = (currentTempFahrenheit - 32) * (5/9);
+                const maxTempCelsius = (maxTempFahrenheit - 32) * (5/9);
+                const minTempCelsius = (minTempFahrenheit - 32) * (5/9);
+
+                // Update HTML content with converted temperatures
+                document.getElementById('currentTemp').textContent = `Current Temperature: ${currentTempCelsius.toFixed(2)}°C`;
+                document.getElementById('maxTemp').textContent = `Maximum Temperature: ${maxTempCelsius.toFixed(2)}°C`;
+                document.getElementById('minTemp').textContent = `Minimum Temperature: ${minTempCelsius.toFixed(2)}°C`;
+
+                var tmp = 10; 
+                if (currentTempCelsius < tmp) {
+                    document.body.classList.add('cold');
+                    document.body.classList.remove('hot');
+                } else {
+                    document.body.classList.add('hot');
+                    document.body.classList.remove('cold');
+                }
+
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+              
+                document.getElementById('currentTemp').textContent = 'Error fetching weather data';
+            }
+        };
+
+        fetchData();
+    </script>
+</body>
+</html>
+
